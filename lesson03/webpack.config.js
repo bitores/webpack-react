@@ -1,4 +1,13 @@
 var path = require('path');
+var node_modules_dir = path.join(__dirname, 'node_modules');
+var deps = [ 
+  'react/dist/react.min.js',
+  'react-router/dist/react-router.min.js',
+  'moment/min/moment.min.js'
+];
+
+
+
 var config = {
   entry: path.resolve(__dirname, 'app/main.js'),
   output: {
@@ -6,6 +15,7 @@ var config = {
     filename: 'bundle.js'
   },
   resolve: {
+    alias: {},
     extensions: ['', '.js', '.jsx']
   },
   module: {
@@ -29,8 +39,19 @@ var config = {
     {
       test: /\.scss$/,
       loader: 'style!css!sass'
+    },
+    // image
+    { 
+      test: /\.(png|jpg)$/, 
+      loader: 'url?limit=25000' 
     }]
   }
 };
+
+deps.forEach(function (dep) {
+  var depPath = path.resolve(node_modules_dir, dep);
+  config.resolve.alias[dep.split(path.sep)[0]] = depPath;
+  config.module.noParse.push(depPath);
+});
 
 module.exports = config;
